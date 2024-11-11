@@ -15,7 +15,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from downloader import YoutubeDownloader, InstagramDownloader, TiktokDownloader
-from database import db
 
 # from keyboards import generate_menu
 
@@ -25,7 +24,6 @@ CHANNEL_ID = os.getenv("CHANNEL_ID")
 dp = Dispatcher()
 bot = Bot(token=BOT_TOKEN)
 
-db.create_table()
 
 
 @dp.message(CommandStart())
@@ -35,31 +33,7 @@ async def start(message: Message):
         parse_mode="HTML",
     )
 
-    # Register Users
-
-    users = db.all_users()
-
-    bot_info = await bot.get_me()
-
-    found = False
-
-    for user in users:
-        if str(message.from_user.id) in user["user_id"]:
-            found = True
-
-    if not found:
-
-        db.register_user(
-            message.from_user.full_name,
-            message.from_user.id,
-            message.from_user.username,
-        )
-
-        channel_message = f"<b>Which Bot:</b> {bot_info.first_name}\n<b>Bot username:</b> @{bot_info.username}\n\n<b>User:</b> {message.from_user.full_name}\n<b>Username:</b> @{message.from_user.username}\n<b>User ID:</b> {message.from_user.id}"
-        await bot.send_message(
-            chat_id=CHANNEL_ID, text=channel_message, parse_mode="HTML"
-        )
-
+   
 
 @dp.message(lambda message: "tiktok.com" in message.text)
 async def process_tiktok_url(message: Message):
@@ -76,28 +50,6 @@ async def process_tiktok_url(message: Message):
 
     # Register Users
 
-    users = db.all_users()
-
-    bot_info = await bot.get_me()
-
-    found = False
-
-    for user in users:
-        if str(message.from_user.id) in user["user_id"]:
-            found = True
-
-    if not found:
-
-        db.register_user(
-            message.from_user.full_name,
-            message.from_user.id,
-            message.from_user.username,
-        )
-
-        channel_message = f"<b>Which Bot:</b> {bot_info.first_name}\n<b>Bot username:</b> @{bot_info.username}\n\n<b>User:</b> {message.from_user.full_name}\n<b>Username:</b> @{message.from_user.username}\n<b>User ID:</b> {message.from_user.id}"
-        await bot.send_message(
-            chat_id=CHANNEL_ID, text=channel_message, parse_mode="HTML"
-        )
 
 
 @dp.message(lambda message: "youtube.com" in message.text or "youtu.be" in message.text)
@@ -113,31 +65,6 @@ async def process_youtube_url(message: Message):
     media_url = youtube_dl.downloader_yt(youtube_url)
 
     await bot.send_video(chat_id=message.chat.id, video=media_url)
-
-    # Register Users
-
-    users = db.all_users()
-
-    bot_info = await bot.get_me()
-
-    found = False
-
-    for user in users:
-        if str(message.from_user.id) in user["user_id"]:
-            found = True
-
-    if not found:
-
-        db.register_user(
-            message.from_user.full_name,
-            message.from_user.id,
-            message.from_user.username,
-        )
-
-        channel_message = f"<b>Which Bot:</b> {bot_info.first_name}\n<b>Bot username:</b> @{bot_info.username}\n\n<b>User:</b> {message.from_user.full_name}\n<b>Username:</b> @{message.from_user.username}\n<b>User ID:</b> {message.from_user.id}"
-        await bot.send_message(
-            chat_id=CHANNEL_ID, text=channel_message, parse_mode="HTML"
-        )
 
 
 #     try:
@@ -204,29 +131,6 @@ async def process_instagram_url(message: Message):
         await bot.send_chat_action(chat_id=message.chat.id, action="upload_video")
 
         await bot.send_video(chat_id=message.chat.id, video=str(media_info.video_url))
-
-    users = db.all_users()
-
-    bot_info = await bot.get_me()
-
-    found = False
-
-    for user in users:
-        if str(message.from_user.id) in user["user_id"]:
-            found = True
-
-    if not found:
-
-        db.register_user(
-            message.from_user.full_name,
-            message.from_user.id,
-            message.from_user.username,
-        )
-
-        channel_message = f"<b>Which Bot:</b> {bot_info.first_name}\n<b>Bot username:</b> @{bot_info.username}\n\n<b>User:</b> {message.from_user.full_name}\n<b>Username:</b> @{message.from_user.username}\n<b>User ID:</b> {message.from_user.id}"
-        await bot.send_message(
-            chat_id=CHANNEL_ID, text=channel_message, parse_mode="HTML"
-        )
 
 
 @dp.message()
